@@ -1,0 +1,14 @@
+# Large / machine-generated — regenerate with the scripts in this repo instead
+# of committing them (dataset is ~2GB, checkpoints are ~1.4GB each).
+venv/
+robosuite/
+robomimic/
+datasets/
+trained_models/
+smoke_test_output/
+videos/
+*.log
+
+__pycache__/
+*.pyc
+.DS_Store
