@@ -10,7 +10,21 @@ INSTALL_DIR="${1:-$(pwd)}"
 mkdir -p "$INSTALL_DIR"
 cd "$INSTALL_DIR"
 
+# Re-runnable: if a clone was interrupted partway (Ctrl-C, dropped network),
+# the target dir exists but has no .git -> wipe it and clone again. If it has
+# .git, assume a prior run finished the clone and skip re-cloning.
+clone_if_needed() {
+    local url="$1" dir="$2"
+    if [ -d "$dir/.git" ]; then
+        echo "$dir already cloned, skipping."
+    else
+        rm -rf "$dir"
+        git clone "$url" "$dir"
+    fi
+}
+
 # 1. venv (use python3.10 if available; otherwise fall back to python3)
+#    Safe to rerun: `python -m venv` on an existing venv dir just refreshes it.
 PYBIN="$(command -v python3.10 || command -v python3)"
 echo "Using $PYBIN"
 "$PYBIN" -m venv venv
@@ -22,11 +36,11 @@ pip install --upgrade pip
 pip install torch torchvision
 
 # 3. Fresh robosuite from source (pinned to the release this was validated against)
-git clone https://github.com/ARISE-Initiative/robosuite.git
+clone_if_needed https://github.com/ARISE-Initiative/robosuite.git robosuite
 (cd robosuite && git checkout v1.5.2 && pip install -e .)
 
 # 4. Fresh robomimic from source
-git clone https://github.com/ARISE-Initiative/robomimic.git
+clone_if_needed https://github.com/ARISE-Initiative/robomimic.git robomimic
 (cd robomimic && pip install -e .)
 
 # 5. Robot model assets (Panda etc.) - required, robosuite no longer bundles these
