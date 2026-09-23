@@ -30,7 +30,7 @@
             "enabled": true,
             "n": 20,
             "horizon": 400,
-            "rate": 50,
+            "rate": 200,
             "warmstart": 0,
             "terminate_on_success": true
         },
